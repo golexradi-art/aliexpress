@@ -46,3 +46,33 @@ h1 strong{animation:discount-on-off 1.2s steps(1,end) infinite}
 /* Match the discount's 0.6-second on/off rhythm. */
 .cta{animation:cta-flash 1.2s steps(1,end) infinite}
 @media(prefers-reduced-motion:reduce){.cta{animation:none}}
+
+/* Native HTML cards. Text and prices render without JavaScript. */
+:root{--card-width:clamp(145px,13vw,195px)}
+.product-wall{grid-template-rows:repeat(4,minmax(0,1fr));gap:5px;background:#f4f4f4}
+.track{width:max-content;animation-name:html-products;height:100%;animation-duration:180s}.lane:nth-child(even) .track{animation-duration:195s}.lane:nth-child(3) .track{animation-duration:185s}
+.product-group{display:flex;gap:10px;padding-right:10px;height:100%;flex-shrink:0}
+.product-card{width:var(--card-width);height:100%;flex:none;background:#fff;color:#191919;padding:5px 7px;display:flex;flex-direction:column;overflow:hidden}
+.product-card>img{display:block;position:static;width:100%;height:0;min-height:0;object-fit:contain;background:#f8f8f8;flex:1}
+.product-card h2{font-size:11px;line-height:15px;margin:4px 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:400;flex:none}
+.product-price{display:flex;align-items:baseline;gap:5px;white-space:nowrap;height:20px;flex:none}.product-price b{font-size:17px;color:#f00633}.product-price del{font-size:10px;color:#737782}.product-price>span{font-size:10px;color:#f00633}
+.product-meta{display:flex;gap:6px;margin:2px 0 0;font-size:10px;white-space:nowrap;height:14px;flex:none;color:#626262}.product-meta span:first-child{color:#222}
+@keyframes html-products{to{transform:translateX(-50%)}}
+@media(max-width:600px){:root{--card-width:145px}.product-group{gap:6px;padding-right:6px}.product-card{padding:3px 5px}.product-card h2{font-size:10px}.product-price b{font-size:15px}.product-meta{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.track{animation:none}}
+
+/* Original promotional ribbon supplied in the AliExpress HTML. */
+.product-card>img.product-ribbon{display:block;position:static;width:100%;height:auto;min-height:14px;max-height:20px;object-fit:fill;flex:0 0 auto;background:#ff004c}
+
+/* The ribbon overlays the photo instead of consuming its height. */
+.product-media{position:relative;flex:1;min-height:0;background:#f8f8f8;overflow:hidden}
+.product-media>img:not(.product-ribbon){position:static;display:block;width:100%;height:100%;object-fit:contain}
+.product-media>.product-ribbon{position:absolute;inset:auto 0 0;display:block;width:100%;height:auto;max-height:20px;object-fit:fill;background:#ff004c}
+
+/* Three rows with square photos and a separate ribbon below every photo. */
+:root{--lane-height:calc((100dvh - var(--header-height) - 10px)/3);--photo-size:max(80px,calc(var(--lane-height) - 79px));--card-width:calc(var(--photo-size) + 14px)}
+.product-wall{grid-template-rows:repeat(3,minmax(0,1fr))}
+.product-card{padding:5px 7px}.product-media{flex:0 0 auto;height:calc(var(--photo-size) + 16px);overflow:hidden;background:white}
+.product-media>img:not(.product-ribbon){width:100%;height:var(--photo-size);object-fit:contain}
+.product-media>.product-ribbon{position:static;display:block;width:100%;height:16px;max-height:none;object-fit:fill}
+@media(max-width:600px){:root{--card-width:calc(var(--photo-size) + 14px)}.product-card{padding:5px 7px}}
