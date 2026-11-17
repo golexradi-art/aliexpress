@@ -80,3 +80,7 @@ h1 strong{animation:discount-on-off 1.2s steps(1,end) infinite}
 .deal-message{margin:20px 0;padding:20px 14px;border:1px solid #ffffff55;border-radius:12px;background:#ffffff12;text-align:center}.deal-message p{margin:0 0 8px;font-size:22px;font-weight:800;color:#ffe500}.deal-message span{font-size:13px;line-height:1.5;color:white}.cta{font-size:15px;gap:14px}@media(max-width:600px){.deal-message{padding:16px 10px;margin:16px 0}.deal-message p{font-size:20px}.deal-message span{font-size:12px}.cta{font-size:12px;gap:10px}}
 
 .deal-message{background:#fff;border-color:#fff}.deal-message p{color:#ff2451}.deal-message span{color:#333}
+
+/* Allow translated copy to wrap without hiding the CTA. */
+.sale-top span[data-i18n]{text-align:end}.sale-card h1>[data-i18n]{font-size:.8em;letter-spacing:-.5px}.cta>[data-i18n]{font-size:inherit;line-height:1.3}.sale-card[dir="rtl"]{font-family:Tahoma,Arial,sans-serif}.sale-card[dir="rtl"] h1{letter-spacing:0}.sale-card[dir="rtl"] h1 strong{direction:ltr;unicode-bidi:isolate}.sale-card .deal-message p{line-height:1.25}.sale-card[lang="de"] .deal-message p,.sale-card[lang="fr"] .deal-message p{font-size:19px}
+@media(max-height:760px){.deal-message{padding:12px;margin:12px 0}.deal-message p{font-size:18px}.deal-message span{font-size:12px}}
