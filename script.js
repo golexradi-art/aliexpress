@@ -91,22 +91,6 @@ popup.querySelectorAll('[data-i18n]').forEach(element => {
   element.textContent = POPUP_TRANSLATIONS[popupLanguage][element.dataset.i18n];
 });
 
-// Set this project's approved offer URL here. No destination is assumed.
-const OFFER_URL = '';
-const link = document.getElementById('offer-link');
-if (OFFER_URL) {
-  const destination = new URL(OFFER_URL);
-  const incoming = new URLSearchParams(window.location.search);
-  for (const name of new Set(incoming.keys())) {
-    destination.searchParams.delete(name);
-    for (const value of incoming.getAll(name)) destination.searchParams.append(name, value);
-  }
-  link.href = destination.href;
-  link.removeAttribute('aria-disabled');
-  document.getElementById('offer-status').hidden = true;
-} else {
-  link.addEventListener('click', event => event.preventDefault());
-}
 const motion = document.querySelector('.motion');
 motion.addEventListener('click', () => {
   const paused = document.body.classList.toggle('paused');
@@ -115,3 +99,121 @@ motion.addEventListener('click', () => {
   motion.textContent = paused ? '▶' : 'Ⅱ';
 });
 document.querySelector('.search').addEventListener('submit', event => event.preventDefault());
+
+// Real verification is available only on Cloudflare Pages with its Function.
+const HUMAN_TEXT = {
+  en: ['Human verification', 'Complete the security check to continue.', 'Checking…', 'Verification successful. You can now open the offer.', 'Verification failed. Please try again.', 'Continue to the offer', 'Try again', 'Close', 'Offer temporarily unavailable.'],
+  fr: ['Vérification humaine', 'Effectuez la vérification pour continuer.', 'Vérification en cours…', 'Vérification réussie. Vous pouvez ouvrir l’offre.', 'La vérification a échoué. Réessayez.', 'Continuer vers l’offre', 'Réessayer', 'Fermer', 'Offre temporairement indisponible.'],
+  es: ['Verificación humana', 'Completa la verificación para continuar.', 'Verificando…', 'Verificación correcta. Ya puedes abrir la oferta.', 'La verificación falló. Inténtalo de nuevo.', 'Continuar a la oferta', 'Reintentar', 'Cerrar', 'Oferta temporalmente no disponible.'],
+  pt: ['Verificação humana', 'Conclua a verificação para continuar.', 'Verificando…', 'Verificação concluída. Você pode abrir a oferta.', 'A verificação falhou. Tente novamente.', 'Continuar para a oferta', 'Tentar novamente', 'Fechar', 'Oferta temporariamente indisponível.'],
+  de: ['Sicherheitsprüfung', 'Schließe die Sicherheitsprüfung ab, um fortzufahren.', 'Wird geprüft…', 'Prüfung erfolgreich. Du kannst das Angebot jetzt öffnen.', 'Die Prüfung ist fehlgeschlagen. Bitte versuche es erneut.', 'Weiter zum Angebot', 'Erneut versuchen', 'Schließen', 'Angebot vorübergehend nicht verfügbar.'],
+  ar: ['التحقق البشري', 'أكمل التحقق الأمني للمتابعة.', 'جارٍ التحقق…', 'تم التحقق بنجاح. يمكنك فتح العرض الآن.', 'فشل التحقق. يرجى المحاولة مجددًا.', 'المتابعة إلى العرض', 'حاول مجددًا', 'إغلاق', 'العرض غير متوفر مؤقتًا.']
+};
+const humanText = HUMAN_TEXT[popupLanguage];
+const offerButton = document.getElementById('offer-link');
+const offerStatus = document.getElementById('offer-status');
+const humanDialog = document.querySelector('.human-dialog');
+const humanStatus = document.getElementById('human-status');
+const continueLink = document.getElementById('human-continue');
+const retryButton = document.getElementById('human-retry');
+const closeHuman = document.querySelector('.human-close');
+humanDialog.lang = popup.lang;
+humanDialog.dir = popup.dir;
+document.getElementById('human-title').textContent = humanText[0];
+continueLink.textContent = humanText[5];
+retryButton.textContent = humanText[6];
+closeHuman.setAttribute('aria-label', humanText[7]);
+let turnstileConfiguration;
+let widgetId;
+let challengeGeneration = 0;
+let scriptPromise;
+function loadTurnstile() {
+  if (window.turnstile) return Promise.resolve();
+  if (scriptPromise) return scriptPromise;
+  scriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    const timer = setTimeout(() => { script.remove(); scriptPromise = null; reject(new Error('timeout')); }, 15000);
+    script.onload = () => { clearTimeout(timer); resolve(); };
+    script.onerror = () => { clearTimeout(timer); script.remove(); scriptPromise = null; reject(new Error('load')); };
+    document.head.appendChild(script);
+  });
+  return scriptPromise;
+}
+function verificationFailed(generation) {
+  if (generation !== challengeGeneration || !humanDialog.open) return;
+  humanStatus.textContent = humanText[4];
+  continueLink.hidden = true;
+  continueLink.removeAttribute('href');
+  retryButton.hidden = false;
+}
+async function beginHumanCheck() {
+  const generation = ++challengeGeneration;
+  humanStatus.textContent = humanText[1];
+  continueLink.hidden = true;
+  continueLink.removeAttribute('href');
+  retryButton.hidden = true;
+  if (widgetId !== undefined && window.turnstile) {
+    window.turnstile.remove(widgetId);
+    widgetId = undefined;
+  }
+  try {
+    await loadTurnstile();
+    if (generation !== challengeGeneration || !humanDialog.open) return;
+    widgetId = window.turnstile.render('#turnstile-widget', {
+      sitekey: turnstileConfiguration.siteKey,
+      action: 'offer', language: popupLanguage === 'pt' ? 'pt-br' : popupLanguage,
+      theme: 'light', size: 'flexible',
+      callback: async token => {
+        if (generation !== challengeGeneration || !humanDialog.open) return;
+        humanStatus.textContent = humanText[2];
+        try {
+          const response = await fetch('/api/offer', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, search: window.location.search }),
+            cache: 'no-store', signal: AbortSignal.timeout(15000)
+          });
+          if (!response.ok) throw new Error('verification');
+          const result = await response.json();
+          if (generation !== challengeGeneration || !humanDialog.open) return;
+          const destination = new URL(result.url);
+          if (!['https:', 'http:'].includes(destination.protocol)) throw new Error('url');
+          humanStatus.textContent = humanText[3];
+          continueLink.href = destination.href;
+          continueLink.hidden = false;
+          continueLink.focus();
+        } catch { verificationFailed(generation); }
+      },
+      'error-callback': () => { verificationFailed(generation); return true; },
+      'expired-callback': () => verificationFailed(generation),
+      'timeout-callback': () => verificationFailed(generation)
+    });
+  } catch { verificationFailed(generation); }
+}
+offerButton.addEventListener('click', () => {
+  if (!turnstileConfiguration?.ready) return;
+  humanDialog.showModal();
+  beginHumanCheck();
+});
+retryButton.addEventListener('click', beginHumanCheck);
+closeHuman.addEventListener('click', () => humanDialog.close());
+humanDialog.addEventListener('close', () => {
+  challengeGeneration++;
+  if (widgetId !== undefined && window.turnstile) window.turnstile.remove(widgetId);
+  widgetId = undefined;
+  continueLink.hidden = true;
+  continueLink.removeAttribute('href');
+  offerButton.focus();
+});
+if (['https:', 'http:'].includes(window.location.protocol)) {
+  fetch('/api/offer', { cache: 'no-store', signal: AbortSignal.timeout(10000) })
+    .then(response => { if (!response.ok) throw new Error('configuration'); return response.json(); })
+    .then(config => {
+      if (!config.ready || typeof config.siteKey !== 'string' || !config.siteKey) throw new Error('configuration');
+      turnstileConfiguration = config;
+      offerButton.disabled = false;
+      offerStatus.hidden = true;
+    })
+    .catch(() => { offerStatus.textContent = humanText[8]; });
+}
