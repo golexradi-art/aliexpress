@@ -191,10 +191,16 @@ async function beginHumanCheck() {
     });
   } catch { verificationFailed(generation); }
 }
-offerButton.addEventListener('click', () => {
-  if (!turnstileConfiguration?.ready) return;
+function openHumanVerification() {
+  if (!turnstileConfiguration?.ready || humanDialog.open) return;
   humanDialog.showModal();
   beginHumanCheck();
+}
+offerButton.addEventListener('click', openHumanVerification);
+popup.addEventListener('click', event => {
+  // The real CTA retains its own keyboard and click behaviour.
+  if (event.target.closest('a, button, input, select, textarea, label')) return;
+  openHumanVerification();
 });
 retryButton.addEventListener('click', beginHumanCheck);
 closeHuman.addEventListener('click', () => humanDialog.close());
@@ -213,6 +219,7 @@ if (['https:', 'http:'].includes(window.location.protocol)) {
       if (!config.ready || typeof config.siteKey !== 'string' || !config.siteKey) throw new Error('configuration');
       turnstileConfiguration = config;
       offerButton.disabled = false;
+      popup.classList.add('offer-ready');
       offerStatus.hidden = true;
     })
     .catch(() => { offerStatus.textContent = humanText[8]; });
