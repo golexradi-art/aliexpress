@@ -91,3 +91,60 @@ button.cta{border:0;font-family:inherit}button.cta:disabled{cursor:default}
 #turnstile-widget{min-height:65px;margin-bottom:14px}#human-continue,#human-retry{display:block;text-align:center;border:0;border-radius:24px;background:#ffe500;color:#111;font:700 14px/1.4 Arial,sans-serif;padding:14px;text-decoration:none;cursor:pointer}#human-continue[hidden],#human-retry[hidden]{display:none}.human-dialog[dir=rtl]{font-family:Tahoma,Arial,sans-serif}
 .human-dialog :focus-visible{outline:3px solid #ff2451;outline-offset:3px}
 .sale-card.offer-ready{cursor:pointer}
+
+.sale-card .sale-top {
+  display: grid;
+  grid-template-columns: minmax(105px, 40%) minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+  isolation: isolate;
+  border-bottom: 2px solid #ff286a;
+  background: linear-gradient(105deg, #fff 25%, #ede8eb 31%, #a48a96 36%, #3e2533 41%, #100b13 48%);
+}
+.sale-card .sale-top > img:first-child {
+  display: block;
+  width: min(140px, 74%);
+  height: auto;
+  margin-inline-start: 10%;
+}
+.sale-card .sale-top .black-friday-banner {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: clamp(68px, 13vh, 106px);
+  object-fit: contain;
+  mix-blend-mode: screen;
+}
+@media (max-height: 650px) {
+  .sale-card .sale-top .black-friday-banner { height: 58px; }
+}
+
+/* Keep the artwork clear of the pink panel below. */
+.sale-card .sale-top .black-friday-banner {
+  padding-bottom: 7px;
+}
+.sale-card .deal-message {
+  position: relative;
+  background: #fff;
+  border: 3px solid #ffdbdb;
+  border-radius: 4px;
+}
+.sale-card .deal-message::before,
+.sale-card .deal-message::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 13px;
+  height: 13px;
+  background: #ff2451;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.sale-card .deal-message::before {
+  left: 0;
+  transform: translate(-65%, -50%);
+}
+.sale-card .deal-message::after {
+  right: 0;
+  transform: translate(65%, -50%);
+}
