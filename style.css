@@ -92,6 +92,8 @@ button.cta{border:0;font-family:inherit}button.cta:disabled{cursor:default}
 .human-dialog :focus-visible{outline:3px solid #ff2451;outline-offset:3px}
 .sale-card.offer-ready{cursor:pointer}
 
+.sale-card h1 strong > [data-discount] { font: inherit; letter-spacing: inherit; }
+
 .sale-card .sale-top {
   display: grid;
   grid-template-columns: minmax(105px, 40%) minmax(0, 1fr);

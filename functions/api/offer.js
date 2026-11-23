@@ -13,9 +13,10 @@ function configuration(env) {
   } catch { return null; }
 }
 
-export function onRequestGet({ env }) {
+export function onRequestGet({ request, env }) {
   const ready = Boolean(configuration(env));
-  return json({ ready, ...(ready ? { siteKey: env.TURNSTILE_SITE_KEY || PUBLIC_SITE_KEY } : {}) });
+  const discount = request.cf?.country === 'US' ? 80 : 90;
+  return json({ ready, discount, ...(ready ? { siteKey: env.TURNSTILE_SITE_KEY || PUBLIC_SITE_KEY } : {}) });
 }
 
 export async function onRequestPost({ request, env }) {

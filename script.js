@@ -216,6 +216,9 @@ if (['https:', 'http:'].includes(window.location.protocol)) {
   fetch('/api/offer', { cache: 'no-store', signal: AbortSignal.timeout(10000) })
     .then(response => { if (!response.ok) throw new Error('configuration'); return response.json(); })
     .then(config => {
+      const discount = config.discount === 80 ? 80 : 90;
+      popup.querySelector('[data-discount]').textContent = String(discount);
+      document.title = document.title.replace('90%', discount + '%');
       if (!config.ready || typeof config.siteKey !== 'string' || !config.siteKey) throw new Error('configuration');
       turnstileConfiguration = config;
       offerButton.disabled = false;
