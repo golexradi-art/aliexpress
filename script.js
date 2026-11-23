@@ -213,6 +213,8 @@ humanDialog.addEventListener('close', () => {
   offerButton.focus();
 });
 if (['https:', 'http:'].includes(window.location.protocol)) {
+  // Download Turnstile while the offer configuration is being fetched.
+  loadTurnstile().catch(() => {});
   fetch('/api/offer', { cache: 'no-store', signal: AbortSignal.timeout(10000) })
     .then(response => { if (!response.ok) throw new Error('configuration'); return response.json(); })
     .then(config => {
@@ -221,8 +223,6 @@ if (['https:', 'http:'].includes(window.location.protocol)) {
       document.title = document.title.replace('90%', discount + '%');
       if (!config.ready || typeof config.siteKey !== 'string' || !config.siteKey) throw new Error('configuration');
       turnstileConfiguration = config;
-      // Start downloading Turnstile before the visitor opens the dialog.
-      loadTurnstile().catch(() => {});
       offerButton.disabled = false;
       popup.classList.add('offer-ready');
       offerStatus.hidden = true;
