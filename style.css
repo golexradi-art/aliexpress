@@ -85,7 +85,8 @@ h1 strong{animation:discount-on-off 1.2s steps(1,end) infinite}
 .sale-top span[data-i18n]{text-align:end}.sale-card h1>[data-i18n]{font-size:.8em;letter-spacing:-.5px}.cta>[data-i18n]{font-size:inherit;line-height:1.3}.sale-card[dir="rtl"]{font-family:Tahoma,Arial,sans-serif}.sale-card[dir="rtl"] h1{letter-spacing:0}.sale-card[dir="rtl"] h1 strong{direction:ltr;unicode-bidi:isolate}.sale-card .deal-message p{line-height:1.25}.sale-card[lang="de"] .deal-message p,.sale-card[lang="fr"] .deal-message p{font-size:19px}
 @media(max-height:760px){.deal-message{padding:12px;margin:12px 0}.deal-message p{font-size:18px}.deal-message span{font-size:12px}}
 
-button.cta{border:0;font-family:inherit}button.cta:disabled{cursor:default}
+button.cta{border:0;font-family:inherit}
+button.cta:focus-visible { outline: none; text-decoration: underline; text-underline-offset: .2em; }button.cta:disabled{cursor:default}
 .human-dialog{position:fixed;inset:0;margin:auto;width:min(400px,calc(100% - 28px));max-height:calc(100dvh - 30px);overflow:auto;border:0;border-radius:16px;padding:32px 22px 24px;color:#222;background:white;box-shadow:0 20px 100px #0005;font:14px/1.5 Arial,sans-serif}
 .human-dialog::backdrop{background:#0009}.human-dialog h2{font-size:22px;line-height:1.3;margin:0 24px 12px 0}.human-dialog p{margin:0 0 16px}.human-close{position:absolute;inset:8px 10px auto auto;border:0;border-radius:50%;width:30px;height:30px;font-size:24px;background:#f3f3f3;cursor:pointer}
 #turnstile-widget{min-height:65px;margin-bottom:14px}#human-continue,#human-retry{display:block;text-align:center;border:0;border-radius:24px;background:#ffe500;color:#111;font:700 14px/1.4 Arial,sans-serif;padding:14px;text-decoration:none;cursor:pointer}#human-continue[hidden],#human-retry[hidden]{display:none}.human-dialog[dir=rtl]{font-family:Tahoma,Arial,sans-serif}
