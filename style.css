@@ -219,3 +219,47 @@ button.cta:focus-visible { outline: none; text-decoration: underline; text-under
   color: #ff75b7;
   animation-delay: 6s;
 }
+
+/* One opening burst, anchored to the same grid cell as the popup. */
+main > .sale-card,
+main::after { grid-area: 1 / 1; }
+main::after {
+  content: "";
+  place-self: center;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  font-size: clamp(14px, 4vw, 25px);
+  filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 6px #ff71ae);
+  box-shadow:
+    0 -10em #ffe987, 3em -9em #ff6daa, 6em -8em #fff,
+    9em -6em #ffd068, 11em -3em #ff5f9f, 12em 0 #fff,
+    11em 3em #ff78b4, 9em 6em #ffd068, 6em 8em #fff,
+    3em 9em #ff70a6, 0 10em #ffe987, -3em 9em #fff,
+    -6em 8em #ff6daa, -9em 6em #ffd068, -11em 3em #fff,
+    -12em 0 #ff5f9f, -11em -3em #ffd068, -9em -6em #fff,
+    -6em -8em #ff6daa, -3em -9em #ffd068,
+    4em -3em #ffe987, 5em 2em #fff, 2em 5em #ff6daa,
+    -3em 4em #ffe987, -5em 1em #fff, -4em -3em #ff6daa;
+  animation: popup-opening-firework 1.85s ease-out .12s both;
+}
+@keyframes popup-opening-firework {
+  0% { opacity: 0; transform: scale(.06); }
+  12% { opacity: 1; }
+  78% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+@media (max-width: 600px) {
+  main::after { transform-origin: center; }
+  @keyframes popup-opening-firework {
+    0% { opacity: 0; transform: scale(.06); }
+    12% { opacity: 1; }
+    78% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.03, 2); }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  main::after { content: none; }
+}
