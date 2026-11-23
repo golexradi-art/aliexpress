@@ -151,3 +151,71 @@ button.cta:focus-visible { outline: none; text-decoration: underline; text-under
   right: 0;
   transform: translate(65%, -50%);
 }
+
+/* Small fireworks around the Black Friday artwork. */
+.sale-card .sale-top { position: relative; }
+.sale-card .sale-top::before,
+.sale-card .sale-top::after,
+.sale-card .sale-top .banner-firework {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  color: #ff5e9a;
+  box-shadow: 0 -13px currentColor, 10px -10px #fff, 14px 0 currentColor,
+    10px 10px #ffd579, 0 14px currentColor, -10px 10px #fff,
+    -14px 0 currentColor, -10px -10px #ffd579;
+  opacity: 0;
+  animation: black-friday-firework 7.2s ease-out infinite;
+}
+.sale-card .sale-top::before { left: 48%; top: 29%;
+  animation-delay: 3.6s;
+}
+.sale-card .sale-top::after {
+  right: 9%;
+  top: 29%;
+  color: #ffc85c;
+  animation-delay: 2.4s;
+}
+@keyframes black-friday-firework {
+  0% { opacity: .8; transform: scale(.3); }
+  3% { opacity: 1; }
+  14% { opacity: .45; transform: scale(1.5); }
+  16.6666667%, 100% { opacity: 0; transform: scale(1.6); }
+}
+.paused .sale-card .sale-top::before,
+.paused .sale-card .sale-top::after,
+.paused .sale-card .sale-top .banner-firework { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .sale-card .sale-top::before,
+  .sale-card .sale-top::after,
+  .sale-card .sale-top .banner-firework { animation: none; opacity: 0; }
+}
+
+.sale-card .sale-top .banner-firework-upper {
+  right: 9%;
+  top: 64%;
+  color: #a8dfff;
+  animation-delay: 4.8s;
+}
+.sale-card .sale-top .banner-firework-lower {
+  left: 48%;
+  top: 64%;
+  color: #ffd579;
+  animation-delay: 1.2s;
+}
+
+.sale-card .sale-top .banner-firework-center {
+  left: 66%;
+  top: 29%;
+  color: #ffd579;
+}
+.sale-card .sale-top .banner-firework-edge {
+  left: 66%;
+  top: 64%;
+  color: #ff75b7;
+  animation-delay: 6s;
+}
