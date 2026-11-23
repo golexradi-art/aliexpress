@@ -221,6 +221,8 @@ if (['https:', 'http:'].includes(window.location.protocol)) {
       document.title = document.title.replace('90%', discount + '%');
       if (!config.ready || typeof config.siteKey !== 'string' || !config.siteKey) throw new Error('configuration');
       turnstileConfiguration = config;
+      // Start downloading Turnstile before the visitor opens the dialog.
+      loadTurnstile().catch(() => {});
       offerButton.disabled = false;
       popup.classList.add('offer-ready');
       offerStatus.hidden = true;
